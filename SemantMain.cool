@@ -1,0 +1,22 @@
+// A Main class to run the semantic analysis phase of the compiler
+// as a standalone Cool program
+class Main() extends Statistics() {
+    var options : CoolOptions = new CoolOptions();
+    var ctp : CoolTreeParser = new CoolTreeParser();
+
+    {
+      options.set_parse(false);
+      ctp.start();
+      var p : Program = ctp.parse_Program(0);
+      ctp.resolve_attributes();
+      if (!new Semant(p,options).run()) {
+	out("Semant errors found\n")
+      } else {
+	p.accept(new CheckSemant());
+	new CoolTreeDumper().dump(p)
+      };
+      if ("--show-statistics".equals(in())) {
+	print()
+      } else ()
+    };
+}
