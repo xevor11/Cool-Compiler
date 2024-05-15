@@ -1,0 +1,96 @@
+-- A (typed) tree language for Cool abstract syntax trees
+
+module COOL[] begin 
+  type Symbol;
+  type Boolean;
+
+  phylum Program;
+  phylum Class;
+  phylum Classes := SEQUENCE[(Class)];
+  phylum Feature;
+  phylum Features := SEQUENCE[Feature];
+  phylum Formal;
+  phylum Formals := SEQUENCE[Formal];
+  phylum Expression;
+  phylum Expressions := SEQUENCE[Expression];
+  phylum Case;
+  phylum Cases := SEQUENCE[Case];
+
+
+  constructor program(classes : Classes) : Program;
+  constructor class_decl(name : Symbol; parent: Symbol; 
+			 features : Features; filename : Symbol): Class;
+
+  -- Features
+  constructor method(overridep : Boolean;
+                     name : Symbol;
+		     formals : Formals;
+		     return_type : Symbol;
+		     expr : Expression) : Feature;
+  constructor attr(name, of_type : Symbol) : Feature;
+
+  -- Formals
+  constructor formal(name, of_type: Symbol) : Formal;
+
+  -- Case
+  constructor branch(name, local_type: Symbol; expr: Expression): Case;
+
+  -- Expressions
+  constructor assign(name : Symbol; expr : Expression) : Expression;
+  constructor static_dispatch(expr: Expression; type_name : Symbol;
+                              name : Symbol; actuals : Expressions) : Expression;
+  constructor dispatch(expr : Expression; 
+		       name : Symbol; actuals : Expressions) : Expression;
+  constructor cond(pred, then_exp, else_exp : Expression): Expression;
+  constructor loop(pred, body: Expression) : Expression;
+  constructor typecase(expr: Expression; cases: Cases): Expression;
+  constructor block(body: Expressions) : Expression;
+  constructor let(identifier, local_type: Symbol; 
+		  init, body: Expression): Expression;
+  constructor  add(e1, e2: Expression) : Expression;
+  constructor  sub(e1, e2: Expression) : Expression;
+  constructor  mul(e1, e2: Expression) : Expression;
+  constructor  div(e1, e2: Expression) : Expression;
+  constructor  neg(e1: Expression) : Expression;
+  constructor   lt(e1, e2: Expression) : Expression;
+  constructor  leq(e1, e2: Expression) : Expression;
+  constructor comp(e1: Expression) : Expression;
+  constructor int_lit(token: Symbol) : Expression;
+  constructor bool_lit(value: Boolean) : Expression;
+  constructor string_lit(token: Symbol) : Expression;
+  constructor alloc(type_name: Symbol): Expression;
+  constructor nil(): Expression;
+  constructor unit(): Expression;
+  constructor no_expr(): Expression;  
+  constructor variable(name: Symbol): Expression;
+
+  -- attributes
+  type CoolNode;
+  type Cmethod;
+  type Cclass_decl;
+
+  attribute Program.any_class : remote Class := null;
+  attribute Program.unit_class : remote Class := null;
+  attribute Program.int_class : remote Class := null;
+  attribute Program.boolean_class : remote Class := null;
+  attribute Program.string_class : remote Class := null;
+
+  attribute Class.superclass : remote Class := null;
+  attribute Class.inheritablep : Boolean := false;
+  -- attribute Class.basicp : Boolean := false;
+
+  attribute Feature.owner : Cclass_decl := null;
+  attribute Feature.overrides : Cmethod := null; -- only for method
+  attribute Feature.feature_of_class : remote Class := null;
+
+  attribute Formal.formal_of_class : remote Class := null;
+
+  attribute Case.case_of_type : Symbol := null;
+  attribute Case.case_of_class : remote Class := null;
+
+  attribute Expression.of_type : Symbol := null;
+  attribute Expression.of_class : remote Class := null; -- only for let/new
+  attribute Expression.binding : CoolNode := null; -- only for assign/variable
+  attribute Expression.mbinding : Cmethod := null; -- only for *dispatch
+
+end;
