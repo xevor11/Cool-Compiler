@@ -29978,7 +29978,7 @@ alex_action_84 = \s -> newlineError s
 alex_action_85 = \s -> unterminatedStringError s
 alex_action_86 = \s -> appendBuffer s
 alex_action_87 = \_ -> exitTripleString
-alex_action_88 = \_ -> (Token (ERROR "Unterminated triple string at EOF"), Normal)
+alex_action_88 = \_ -> (Token (ERROR "Unterminated triple string at EOF"), 0)
 
 #define ALEX_NOPRED 1
 -- -----------------------------------------------------------------------------
@@ -30293,11 +30293,11 @@ data LexerState = LexerState {
         st <- get
         case lookaheadToken st of
             Just YYEOF -> return False
-            Just _ -> return True
-            Nothing -> do
+            Just _     -> return True
+            Nothing    -> do
                 token <- lexToken
                 put st { lookaheadToken = Just token }
-                return (token /= YYEOF)
+                return True
 
     setInBasicFile :: Bool -> Lexer ()
     setInBasicFile flag = modify (\st -> st { inBasicFile = flag })
@@ -30305,32 +30305,33 @@ data LexerState = LexerState {
     appendBuffer :: String -> Lexer ()
     appendBuffer str = modify $ \st -> st { stringBuffer = stringBuffer st `T.append` T.pack str }
 
-    exitString :: Lexer (Token, AlexUserState)
+    exitString :: Lexer Token
     exitString = do
         st <- get
         let result = stringBuffer st
         put st { stringBuffer = T.empty }
-        return (STR_LIT $ T.unpack result, Normal)
+        return (STR_LIT $ T.unpack result)
 
-    illegalEscape :: String -> Lexer (Token, AlexUserState)
-    illegalEscape s = do
-        return (ERROR ("Illegal escape sequence: " ++ s), Normal)
+    illegalEscape :: String -> Lexer Token
+    illegalEscape s = return (ERROR ("Illegal escape sequence: " ++ s))
 
-    unterminatedStringError :: Lexer (Token, AlexUserState)
-    unterminatedStringError s = do
-        return (ERROR ("Unterminated string at newline" ++ show s), Normal)
+    unterminatedStringError :: String -> Lexer Token
+    unterminatedStringError s = return (ERROR ("Unterminated string at newline" ++ show s))
 
-    backslashError :: String -> Lexer (Token, AlexUserState)
-    backslashError s = do
-        return (ERROR ("Backlash followed by: " ++ show s), Normal)
+    backslashError :: String -> Lexer Token
+    backslashError s = return (ERROR ("Backslash followed by: " ++ show s))
 
-    newlineError :: Lexer (Token, AlexUserState)
-    unterminatedStringError s = do
-        return (ERROR ("Newlines cannot be followed by: " ++ show s), Normal)
+    newlineError :: String -> Lexer Token
+    newlineError s = return (ERROR ("Newlines cannot be followed by: " ++ show s))
 
-    eofInStringError :: Lexer (Token, AlexUserState)
-    eofInStringError = do
-        return (ERROR "EOF encountered within string literal", Normal)
+    eofInStringError :: Lexer Token
+    eofInStringError = return (ERROR "EOF encountered within string literal")
+
+    illegalOperatorError :: String -> Lexer Token
+    illegalOperatorError operator = return (ERROR ("Illegal operator: " ++ operator))
+
+    illegalKeywordError :: String -> Lexer Token
+    illegalKeywordError keyword = return (ERROR ("Illegal keyword: " ++ keyword))
 
     runLexer :: [Token] -> Lexer [Token]
     runLexer acc = do
