@@ -15,6 +15,7 @@ data Token
   | TYPEID { getName :: String , getPosition :: Position }
   | OBJECTID { getName :: String , getPosition :: Position }
   | OVERRIDE { getPosition :: Position }
+  | THIS { getPosition :: Position }
   | SUPER { getPosition :: Position }
   | VAR { getPosition :: Position }
   | MATCH { getPosition :: Position }
@@ -35,23 +36,6 @@ data Token
   | LE { getPosition :: Position }
   | EQEQ { getPosition :: Position }
   | YYEOF
-  | LB { getPosition :: Position }
-  | RB { getPosition :: Position }
-  | RBRACE { getPosition :: Position }
-  | LBRACE { getPosition :: Position }
-  | LPAREN { getPosition :: Position }
-  | RPAREN { getPosition :: Position }
-  | COLON { getPosition :: Position }
-  | SEMICOLON { getPosition :: Position }
-  | PERIOD { getPosition :: Position }
-  | COMMA { getPosition :: Position }
-  | PLUS { getPosition :: Position }
-  | MINUS { getPosition :: Position }
-  | TIMES { getPosition :: Position }
-  | DIV { getPosition :: Position }
-  | ARROW { getPosition :: Position }
-  | ASSIGN { getPosition :: Position }
-  | INVALIDERROR { getPosition :: Position }
-  | EOFERROR { getPosition :: Position }
+  | DEF { getPosition :: Position }
   | ERROR { getCharacterError :: Char, getPosition :: Position }
   deriving (Eq, Show, Read)

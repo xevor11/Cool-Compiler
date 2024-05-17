@@ -48,6 +48,7 @@ stringKeywordMap =
     , ("while", WHILE)
     , ("case", CASE)
     , ("new", NEW)
+    , ("this", THIS)
     ]
 
 treatKeyword :: (String -> Position -> Token) -> String -> Position -> Token
