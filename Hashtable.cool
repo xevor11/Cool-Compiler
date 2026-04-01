@@ -1,0 +1,173 @@
+class Hashtable() extends IO()
+{
+  // #(
+  var buckets: ArrayAny = new ArrayAny(10);
+  var entries: Int = 0;
+
+  def size(): Int = entries;
+
+  def get(key: Symbol): Any = {
+    // Find the index of the initial bucket.
+    // This must be a valid array index, but
+    // may not contain anything.
+
+    var i: Int = hash(key);
+    var head: HashEntry = buckets.get(i) match {
+      case null         => null
+      case e: HashEntry => e 
+    };
+    
+    var ret: Any = null;
+
+    // If we have no head, then the key can't be
+    // present. Otherwise, we scan the chain for
+    // the key. If found, we set head to null to
+    // simulate a break
+
+    while (!is_null(head)) {
+      if (key == head.get_key()) {
+        ret = head.get_value();
+        head = null
+      } else {
+        head = head.get_next()
+      }
+    };
+
+    ret
+  };
+
+  def put(key: Symbol, value: Any): Any = {
+    // Find the index of the initial bucket.
+    // This must be a valid array index, but
+    // may not contain anything. 
+
+    var i: Int = hash(key);
+    var head: HashEntry = buckets.get(i) match {
+      case e: HashEntry => e
+      case null         => null
+    };
+
+    var oldValue: Any = null;
+    var replaced: Boolean = false;
+    var headCopy: HashEntry = head;
+
+    // If there's a head, we first search through the
+    // list to see if we can update some entry. Else,
+    // we have to insert a new entry at the beginning
+    // of the list.
+    
+    while (!is_null(head)) {
+      if (key == head.get_key()) {
+        replaced = true;
+        oldValue = head.get_value();
+        head.set_value(value);
+        head = null
+      } else {
+        head = head.get_next()
+      }
+    };
+
+    // We didn't modfiy an entry, so we'll add it to the
+    // head of the list. We stashed a copy of the "next"
+    // target so that we didn't have to match/cast twice.
+
+    if (!replaced) {
+      buckets.set(i, new HashEntry(key, value, headCopy));
+      entries = entries + 1;
+      if (buckets.length() <= entries) rehash() else null
+    } else {};
+
+    oldValue
+  };
+
+  def elements(): Enumeration = new HashtableEnumeration(buckets);
+
+  def hash(key: Symbol): Int = {
+    // Equivalent to Math.abs(key.hashCode) % buckets.length()
+    var h: Int = key.hashCode();
+    var n: Int = buckets.length();
+    var i: Int = (h / n) * n;
+    if (h < 0) i - h else h - i
+  };
+
+  def rehash(): Unit = {
+    var enum: Enumeration = elements();
+    buckets = new ArrayAny(buckets.length() * 2);
+    entries = 0;
+
+    // Now for each entry in the enumeration (which stores a copy
+    // of the old buckets so we can safely mutate), we can simply
+    // call the put method. Huzzah simplicity!
+
+    while (enum.hasNext()) {
+      enum.next() match {
+        case p: Pair => p.first() match {
+          case key: Symbol => put(key, p.second())
+        }
+      }
+    }
+  };
+  // #)
+}
+
+class HashEntry(var key: Symbol, var value: Any, var next: HashEntry) {
+  // #(
+  def get_key(): Symbol = key;
+  def get_value(): Any = value;
+  def get_next(): HashEntry = next;
+
+  def set_value(v: Any): Unit = value = v;
+  def set_next(n: HashEntry): Unit = next = n;
+  // #)
+}
+
+class HashtableEnumeration(var buckets: ArrayAny) extends Enumeration() {
+  // #(
+  var i: Int = -1;
+  var e: HashEntry = null;
+  var io: IO = new IO();
+
+  override def hasNext(): Boolean = e match {
+    case null         => false
+    case x: HashEntry => true
+  };
+
+  override def next(): Any = {
+    e match {
+      case null         => io.abort("Accessed next() after hasNext() returned false.")
+      case x: HashEntry => {
+        advance();
+        new Pair(x.get_key(), x.get_value())
+      }
+    }
+  };
+
+  def advance(): Unit = {
+    // First, try to advance the hash entry
+    // chain.  We won't have a current elem
+    // when the enumerator is first created.
+
+    e = e match {
+      case null         => null
+      case x: HashEntry => x.get_next()
+    };
+
+    // If e is null, then we either didn't have a
+    // previous element, or we fell off the list.
+    // Find the next bucket index that has a head
+    // in it, or advance i past the length of the
+    // array.
+ 
+    while (if (io.is_null(e)) { i = i + 1; i } < buckets.length() else false) {
+      buckets.get(i) match {
+        case null         => null
+        case x: HashEntry => e = x
+      }
+    }
+  };
+
+  // Get ready for first call to hasNext/next.
+
+  { advance() };
+  // #)
+}
