@@ -1,0 +1,15 @@
+/** The COOL 2009 Compiler code generation phase main program
+ * John Boyland, January 2009
+ */
+class Main() extends IO() {
+  {
+    var options : CoolOptions = new CoolOptions();
+    var ctp : CoolTreeParser = new CoolTreeParser();
+
+    ctp.start();
+    var p : Program = ctp.parse_Program(0);
+    ctp.resolve_attributes();
+
+    new CodeGen(p,options,new IO()).run()
+  };
+}
