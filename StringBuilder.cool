@@ -1,0 +1,15 @@
+/**
+ * A simple class for building up strings.
+ */
+class StringBuilder() {
+  var result : String = "";
+
+  def append(s : String) : StringBuilder = {
+    result = result.concat(s);
+    this
+  };
+
+  def setLength(n : Int) : Unit = result = result.substring(0,n);
+
+  override def toString() : String = result;
+}
