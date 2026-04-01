@@ -4,7 +4,7 @@ This project implements a full compiler pipeline for the **COOL (Classroom Objec
 
 ---
 
-## 📌 Overview
+## Overview
 
 The compiler translates COOL programs into **MIPS assembly**, following a modular pipeline:
 Source Code → Lexer → Parser → Semantic Analyzer → Code Generator → MIPS
@@ -14,9 +14,9 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-## 🚀 Features
+## Features
 
-### 🧩 Lexer (Flex / Lex)
+### Lexer (Flex / Lex)
 - Tokenizes COOL programs using regular expressions  
 - Handles:
   - Keywords  
@@ -26,7 +26,7 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-### 🌳 Parser (Bison / YACC)
+### Parser (Bison / YACC)
 - Implements an **LALR(1) grammar** for COOL  
 - Resolves shift/reduce conflicts using:
   - Precedence rules  
@@ -35,7 +35,7 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-### 🧠 Semantic Analyzer (Scala)
+### Semantic Analyzer (Scala)
 - Performs type checking with **inheritance-aware environments**  
 - Symbol resolution using **scoped environments**  
 - Detects:
@@ -48,7 +48,7 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-### ⚙️ Code Generator (Scala → MIPS)
+### Code Generator (Scala → MIPS)
 - Generates **MIPS assembly** from typed AST  
 - Implements:
   - Method dispatch (dynamic & static)  
@@ -57,15 +57,15 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-## 🏗️ Key Design Concepts
+## Key Design Concepts
 
-### 🔁 Environment Propagation
+### Environment Propagation
 - Class environments are built hierarchically (**parent → child**)  
 - Enables correct attribute and method resolution across inheritance  
 
 ---
 
-### 🌲 AST-Based Compilation
+### AST-Based Compilation
 - All stages operate on structured **AST nodes**  
 - Enables clean separation between:
   - Parsing  
@@ -74,7 +74,7 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-### 🔍 Visitor Pattern
+### Visitor Pattern
 - Used extensively for:
   - Semantic analysis  
   - Code generation  
@@ -82,15 +82,15 @@ Each stage is implemented from scratch using standard compiler tools and techniq
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Languages:** Scala, C/C++  
+- **Languages:** Scala  
 - **Tools:** Flex, Bison, YACC  
 - **Target:** MIPS Assembly  
 
 ---
 
-## 📂 Compilation Pipeline Summary
+## Compilation Pipeline Summary
 COOL Source Code
 ↓
 Lexer
