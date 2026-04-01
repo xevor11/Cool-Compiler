@@ -1,2 +1,2 @@
 # Cool-Compiler
-A haskell encoded Cool Compiler
+A scala encoded Cool Compiler
